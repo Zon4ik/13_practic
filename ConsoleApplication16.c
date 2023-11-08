@@ -7,7 +7,7 @@
 
 
 
-int* read_file(int* mas, int* count_nums) {
+int* read_file(int* mas, int* count_nums, int* count_symvols) {
     FILE* file;
     char ch;
 
@@ -23,6 +23,7 @@ int* read_file(int* mas, int* count_nums) {
     char* buff = (char*)malloc(ii * sizeof(char));
     // Чтение и вывод содержимого файла
     while ((ch = fgetc(file)) != EOF) {
+        *count_symvols += 1;
         if (ch != ' ' && ch != '\n') {
             buff[ii - 1] = ch;
             ii++;
@@ -77,8 +78,7 @@ int* sort_mas_shake(int* mas, int count_nums) {
     return mas;
 }
 
-int* sort_mas_radix(int* mas, int count_nums) {
-    // Finde len max number
+int func_max_digit(int* mas, int count_nums) {
     int Max = 0;
     for (int i = 0; i < count_nums; i++) {
         if (Max < mas[i]) Max = mas[i];
@@ -88,6 +88,13 @@ int* sort_mas_radix(int* mas, int count_nums) {
         Max /= 10;
         max_digits++;
     }
+    return max_digits;
+}
+
+int* sort_mas_radix(int* mas, int count_nums) {
+    // Finde len max number
+    
+    int max_digits = func_max_digit(mas, count_nums);
 
     //base SC
     int base = 10;
@@ -131,16 +138,42 @@ int* sort_mas_radix(int* mas, int count_nums) {
     return mas;
 }
 
+void write_file(int* mas, int count_symvols, int count_nums) {
+    int max_digit = func_max_digit(mas, count_nums + 1);
+    char* str = (char*)malloc(count_symvols);
+    sprintf(str, "%d", mas[0]);
+
+    char* temp = (char*)malloc(max_digit + 2);
+    for (int i = 1; i < count_nums; i++) {
+        sprintf(temp, " %d", mas[i]);
+        strcat(str, temp);
+    }
+    printf("\n%s", str);
+
+    char* adress = "File_out.txt";
+    FILE* file = fopen(adress, "w");
+    if (file != EOF) {
+        fputs(str, file);
+        fclose(file);
+    }
+    
+    free(str);
+    free(temp);
+}
 
 int main() {
     setlocale(0, "");
     int* mas = (int*)malloc(10 * sizeof(int));
     int count_nums = 0;
+    int count_symvols = 0;
 
-    mas = read_file(mas, &count_nums);
+   
+    mas = read_file(mas, &count_nums, &count_symvols);
 
     //mas = sort_mas_shake(mas, count_nums);  
     mas = sort_mas_radix(mas, count_nums);
+
+    write_file(mas, count_symvols, count_nums);
 
     printf("\n\nРезультат сортировки: ");
     for (int i = 0; i < count_nums; i++) printf("%d ", mas[i]);
