@@ -139,8 +139,9 @@ int* sort_mas_radix(int* mas, int count_nums) {
 }
 
 void write_file(int* mas, int count_symvols, int count_nums) {
-    int max_digit = func_max_digit(mas, count_nums + 1);
-    char* str = (char*)malloc(count_symvols);
+    printf("JAHSGDHSGAJD");
+    int max_digit = func_max_digit(mas, count_nums);
+    char* str = (char*)malloc(count_symvols + 2);
     sprintf(str, "%d", mas[0]);
 
     char* temp = (char*)malloc(max_digit + 2);
