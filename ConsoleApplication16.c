@@ -7,7 +7,7 @@
 
 
 
-int* read_file(int* mas, int* count_nums, int* count_symvols) {
+int* read_file(int* mas) {
     FILE* file;
     char ch;
 
@@ -19,34 +19,14 @@ int* read_file(int* mas, int* count_nums, int* count_symvols) {
         return 1;
     }
 
-    int i = 0; int ii = 1;
-    char* buff = (char*)malloc(ii * sizeof(char));
-    // Чтение и вывод содержимого файла
-    while ((ch = fgetc(file)) != EOF) {
-        *count_symvols += 1;
-        if (ch != ' ' && ch != '\n') {
-            buff[ii - 1] = ch;
-            ii++;
-            buff = (char*)realloc(buff, ii * sizeof(char));
-        }
-        else {
-            buff[ii] = '\0';
-            mas[i] = atoi(buff);
-            i++;
-            ii = 1;
-            buff = (char*)realloc(buff, ii * sizeof(char));
-        }
+    int i = 0;
+    while (fscanf(file, "%d", &mas[i]) == 1) {
+        i++;
     }
 
-    free(buff);
+    printf("Массив из файла: ");
+    for (int j = 0; j < i; j++) printf("%d ", mas[j]);
     fclose(file);
-
-    *count_nums = i;
-    mas = (int*)realloc(mas, *count_nums * sizeof(int));
-
-    // print massive
-    printf("Массив: ");
-    for (int i = 0; i < *count_nums; i++) printf("%d ", mas[i]);
 
     return mas;
 
@@ -139,7 +119,7 @@ int* sort_mas_radix(int* mas, int count_nums) {
 }
 
 void write_file(int* mas, int count_symvols, int count_nums) {
-    printf("JAHSGDHSGAJD");
+    
     int max_digit = func_max_digit(mas, count_nums);
     char* str = (char*)malloc(count_symvols + 2);
     sprintf(str, "%d", mas[0]);
@@ -162,14 +142,58 @@ void write_file(int* mas, int count_symvols, int count_nums) {
     free(temp);
 }
 
+int count_s() {
+    FILE* file;
+    file = fopen("File_in.txt", "r");
+
+    char ch;
+    int count = 0;
+
+    // Проверка, удалось ли открыть файл
+    if (file == NULL) {
+        printf("Ошибка при открытии файла.\n");
+        return 1;
+    }
+
+    while ((ch = fgetc(file)) != EOF) {
+        count++;
+    }
+
+    fclose(file);
+    return count;
+}
+
+int count_n() {
+    FILE* file;
+    file = fopen("File_in.txt", "r");
+
+    int num;
+    int count = 0;
+    // Проверка, удалось ли открыть файл
+    if (file == NULL) {
+        printf("Ошибка при открытии файла.\n");
+        return 1;
+    }
+
+    
+    while (fscanf(file, "%d", &num) == 1) {
+        count += 1;
+    }
+
+    fclose(file);
+    return count;
+}
+
 int main() {
     setlocale(0, "");
-    int* mas = (int*)malloc(10 * sizeof(int));
-    int count_nums = 0;
-    int count_symvols = 0;
+    int count_nums = count_n();
+    int count_symvols = count_s();
+
+    
 
    
-    mas = read_file(mas, &count_nums, &count_symvols);
+    int* mas = (int*)malloc(count_nums * sizeof(int));
+    mas = read_file(mas);
 
     //mas = sort_mas_shake(mas, count_nums);  
     mas = sort_mas_radix(mas, count_nums);
